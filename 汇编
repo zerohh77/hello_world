@@ -1,0 +1,131 @@
+data segment
+  str1 db 'Input the 4*4 matrix :$'
+  str2 db 0dh,0ah,'The sum of the main diagonal elements is:',0dh,0ah,'$'
+  str3 db 0dh,0ah,'The saddle point in the matrix is:',0dh,0ah,'$'
+  str4 db 0dh,0ah,'No saddle point!$' 
+  matrix dw 16 dup(?)
+  x dw 0
+  y dw 10
+  i dw 0
+  j dw 0 
+data ends
+
+stack segment stack
+  dw 20 dup(?)
+stack ends
+
+nextline MACRO ;换行
+  mov ah,02h
+  mov dl,0ah
+  int 21h
+  mov dl,0dh
+  int 21h
+ENDM
+
+code segment
+  assume cs:code,ds:data,ss:stack
+  main proc far
+start:
+  mov ax,data
+  mov ds,ax
+  
+  lea dx,str1
+  mov ah,09h
+  int 21h
+  nextline
+  mov si,0
+  mov cx,4
+l1:mov bx,4
+l2:call input
+  mov ax,x
+  mov matrix[si],ax
+  add si,2
+  mov dl,' '
+  mov ah,02h
+  int 21h
+  mov x,0
+  dec bx
+  jnz l2
+  nextline
+loop l1
+  call output_sum
+  call find_saddlepoint  
+  
+  mov ax,4c00h
+  int 21h
+  main endp
+  
+  
+input proc near ;键盘输入一个4*4的矩阵
+   push ax
+   push bx
+   push cx
+   push di 
+   push si
+  
+   mov ax,0
+ a1:mov di,4
+ a2:dec di
+    mov ah,01h
+    int 21h
+	cmp al,30h
+	jb a1
+	cmp al,39h
+	ja a1
+	mov bl,0
+	mov bl,al
+	sub bl,30h 
+	mov dx,0
+	mov ax,x
+	mov si,10
+	mul si  
+	add ax,bx 
+	mov x,ax
+	cmp di,0
+	jnz a2
+	
+	pop si
+	pop di
+	pop cx
+	pop bx
+	pop ax 
+	ret
+input endp
+ 
+output_sum proc near ;计算并输出主对角线元素之和
+  mov bx,0
+  mov di,0
+  mov cx,4
+s0:add bx,matrix[di]
+  add di,10
+  loop s0
+  
+  lea dx,str2
+  mov ah,09h
+  int 21h
+  
+   mov ax,bx
+s1:mov dx,0
+   mov si,10
+   div si
+   add dx,30h
+   push dx 
+   inc cx
+   cmp ax,0
+   jg s1	
+s2:
+   pop dx
+   mov ah,02h
+   int 21h
+   loop s2
+
+  ret
+output_sum endp 
+
+find_saddlepoint proc near ;找到矩阵的鞍点并闪烁显示
+  
+  ret
+find_saddlepoint endp
+
+code ends
+end start
