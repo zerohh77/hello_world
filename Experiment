@@ -1,0 +1,165 @@
+import java.awt.*;
+import java.awt.event.*;
+
+import javax.swing.JComboBox;
+import javax.swing.JFrame;
+import javax.swing.JRadioButton;
+import javax.swing.JTextArea;
+import javax.swing.*;
+import javax.swing.event.*;
+class Information_in extends JFrame implements ActionListener{
+    private TextField text_ID,text_name,text_birth,text_address;
+	private Button button_save,button_exit;
+	private Panel one,two,three,four,five,six,seven,eight,nine;
+	private JRadioButton sex1,sex2;
+	private JCheckBox c1;
+	private JTextArea text_note;
+	public JComboBox<String> com_proffesion;
+	private static String proffesion[]= {"计算机","环境","物探"};
+	public Information_in() {
+		super("学生信息录入系统");
+		this.setBounds(200, 200, 500, 800);
+		this.setBackground(Color.lightGray);
+		this.setLayout(new GridLayout(9,1));
+		one = new Panel();
+		this.add(one);
+		one.setLayout(new FlowLayout(0,5,0));
+		one.add(new Label("学号",Label.LEFT));
+		text_ID = new TextField("",5);
+		one.add(text_ID);
+		
+		two = new Panel();
+		this.add(two);
+		two.setLayout(new FlowLayout(0,5,0));
+		two.add(new Label("姓名",Label.LEFT));
+		text_name = new TextField("",10);
+		two.add(text_name);
+		
+		three = new Panel();
+		this.add(three);
+		three.setLayout(new FlowLayout(0,5,0));
+		three.add(new Label("性别",Label.LEFT));
+		sex1 = new JRadioButton("男");
+		three.add(sex1);
+		sex2 = new JRadioButton("女");
+		three.add(sex2);
+		
+		four = new Panel();
+		this.add(four);
+		four.setLayout(new FlowLayout(0,5,0));
+		four.add(new Label("出生日期",Label.LEFT));
+		text_birth = new TextField("",5);
+		four.add(text_birth);
+		
+		five = new Panel();
+		this.add(five);
+		five.setLayout(new FlowLayout(0,5,0));
+		five.add(new Label("团员否",Label.LEFT));
+		c1 = new JCheckBox();
+		five.add(c1);
+		
+		six = new Panel();
+		this.add(six);
+		six.setLayout(new FlowLayout(0,5,0));
+		six.add(new Label("专业",Label.LEFT));
+		six.add(this.com_proffesion = new JComboBox<String>(this.proffesion));
+		
+		seven = new Panel();
+		this.add(seven);
+		seven.setLayout(new FlowLayout(0,5,0));
+		seven.add(new Label("家庭地址",Label.LEFT));
+		text_address = new TextField("",40);
+		seven.add(text_address);
+		
+		eight = new Panel();
+		this.add(eight);
+		eight.setLayout(new FlowLayout(0,5,0));
+		eight.add(new Label("简历",Label.LEFT));
+		text_note = new JTextArea(4,30);
+		eight.add(text_note);
+		
+		nine = new Panel();
+		this.add(nine);
+		nine.setLayout(new FlowLayout(1,5,0));
+		button_save = new Button("保存");
+		button_exit = new Button("取消");
+		nine.add(button_save);
+		nine.add(button_exit);
+		button_save.addActionListener(this);
+		button_exit.addActionListener(this);
+	
+		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		this.setVisible(true);
+	}
+	public void actionPerformed(ActionEvent e1) {
+		if(e1.getSource()==button_save) {
+			text_note.append("学号："+text_ID.getText()+
+					" 姓名："+text_name.getText()+
+					" 性别："+(sex1.isSelected()?sex1.getText():sex2.getText())
+							+" 出生日期："+text_birth.getText()
+							+(c1.isSelected()?" 是":" 不是"+"团员")+
+							" 专业："+(String)com_proffesion.getSelectedItem()+" 家庭地址："+text_address.getText()+"\n");
+		}
+		else if(e1.getSource()==button_exit)
+		{
+			System.exit(-1);
+		}
+	}	
+}
+class Login extends JFrame implements ActionListener{
+	private TextField text_user,text_password;
+    private Button button_login,button_exit;
+    private Panel first,second,third;
+    public Login() {
+    	super("登陆窗口");
+    	this.setSize(300,180);
+    	this.setLocation(900,300);
+    	this.setBackground(Color.lightGray);
+    	this.setLayout(new GridLayout(3,1));
+    	first = new Panel();
+        first.setLayout(new FlowLayout());
+    	this.add(first);
+    	first.add(new Label("用户名：",Label.LEFT));
+    	text_user = new TextField("",10);
+    	first.add(text_user);
+    	second = new Panel();
+    	this.add(second);
+    	second.add(new Label("密  码：",Label.LEFT));
+    	text_password = new TextField("",10);
+    	second.add(text_password);
+    	button_login = new Button("确定");
+        third = new Panel();
+    	this.add(third);
+    	third.add(button_login);
+    	third.add(new Label("\n",Label.LEFT));
+    	button_exit = new Button("取消");
+    	third.add(button_exit);
+    	button_login.addActionListener(this);
+    	button_exit.addActionListener(this);	
+    	this.setVisible(true);
+    	this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    } 
+	public void actionPerformed(ActionEvent e) {
+		if(e.getSource()==button_login) {
+			String str1 = text_user.getText();
+			if(str1.equals("admin")) {
+				String str2 = text_password.getText();
+				if(str2.equals("123")) {
+					new Information_in();
+					
+				}
+			}
+				
+		}
+		if(e.getSource()==button_exit) {
+			System.exit(0);
+		}
+		else
+			return;
+	}
+}
+public class Test6_1 {
+	public static void main(String arg[]) {
+		new Login();
+	}
+}
