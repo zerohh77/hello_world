@@ -1,13 +1,14 @@
 data segment
   str1 db 'Input the 4*4 matrix :$'
-  str2 db 0dh,0ah,'The sum of the main diagonal elements is:',0dh,0ah,'$'
+  str2 db 0dh,0ah,'The sum of the leading diagonal elements is:',0dh,0ah,'$'
   str3 db 0dh,0ah,'The saddle point in the matrix is:',0dh,0ah,'$'
   str4 db 0dh,0ah,'No saddle point!$' 
   matrix dw 16 dup(?)
   x dw 0
   y dw 10
-  i dw 0
-  j dw 0 
+  col dw 0
+  row dw 0 
+  max dw 0
 data ends
 
 stack segment stack
@@ -48,7 +49,8 @@ l2:call input
   jnz l2
   nextline
 loop l1
-  call output_sum
+
+  call output_sum 
   call find_saddlepoint  
   
   mov ax,4c00h
@@ -118,14 +120,93 @@ s2:
    mov ah,02h
    int 21h
    loop s2
-
+   
+   nextline
   ret
 output_sum endp 
 
+;----------------------------------------------------
 find_saddlepoint proc near ;找到矩阵的鞍点并闪烁显示
-  
+   mov ax,0    
+f1:cmp ax,32 ;遍历4行
+   jae f1_end
+   mov si,ax 
+   
+   mov bx,0
+   mov max,bx
+f2:cmp bx,8 
+   jae f2_end
+   ;push ax
+   
+   mov di,ax
+   add di,bx
+   mov dx,max
+   cmp dx,matrix[di]
+   jb fa
+
+fb:;pop ax
+   add bx,2
+   jmp f2
+   
+fa:mov dx,matrix[di]
+   mov max,dx ;记录最大值
+   mov cx,di ;记录最大值的下标
+   mov row,bx  ;记录列
+   jmp fb
+   ;找到每行的最大元素
+   
+f2_end:
+   ;push bx
+   mov dx,0
+   push ax ;保护ax
+check:
+   cmp dx,25
+   jae check_end
+   
+   mov bx,dx
+   add bx,row
+   mov si,bx
+   mov bx,max
+   cmp bx,matrix[si]
+   ja fnext
+   
+   add dx,8  
+   jmp check
+check_end:
+   pop ax
+   mov bx,max  
+   call output   
+   nextline
+fnext: 
+    pop ax 
+    ;pop bx
+	add ax,8
+	jmp f1
+   
+f1_end: 
   ret
 find_saddlepoint endp
+
+
+output proc near  ;用于输出4位十进制数
+   
+   mov ax,bx
+   mov cx,0
+oo1:mov dx,0
+   mov si,10
+   div si
+   add dx,30h
+   push dx 
+   inc cx
+   cmp ax,0
+   jg oo1	
+oo2:
+   pop dx
+   mov ah,02h
+   int 21h
+   loop oo2
+  ret 
+output endp
 
 code ends
 end start
